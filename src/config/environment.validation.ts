@@ -1,7 +1,10 @@
+import { LogLevel, logLevels } from './app.config';
+
 const PORT_MIN = 1;
 const PORT_MAX = 65535;
 
 interface EnvironmentVariables {
+  LOG_LEVEL: LogLevel;
   PORT: number;
 }
 
@@ -9,6 +12,7 @@ export function validateEnvironment(
   config: Record<string, unknown>,
 ): EnvironmentVariables {
   const errors: string[] = [];
+  const logLevel = validateLogLevel(config.LOG_LEVEL, errors);
   const port = validatePort(config.PORT, errors);
 
   if (errors.length > 0) {
@@ -17,8 +21,27 @@ export function validateEnvironment(
 
   return {
     ...config,
+    LOG_LEVEL: logLevel,
     PORT: port,
   };
+}
+
+function validateLogLevel(value: unknown, errors: string[]): LogLevel {
+  if (value === undefined || value === null || value === '') {
+    errors.push('LOG_LEVEL is required');
+    return 'info';
+  }
+
+  if (typeof value !== 'string' || !isLogLevel(value)) {
+    errors.push(`LOG_LEVEL must be one of: ${logLevels.join(', ')}`);
+    return 'info';
+  }
+
+  return value;
+}
+
+function isLogLevel(value: string): value is LogLevel {
+  return logLevels.includes(value as LogLevel);
 }
 
 function validatePort(value: unknown, errors: string[]): number {

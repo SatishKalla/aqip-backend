@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigType } from '@nestjs/config';
+import { LoggerModule } from 'nestjs-pino';
 import { appConfig, validateEnvironment } from './config';
 import { HealthModule } from './modules/health/health.module';
 
@@ -10,6 +11,15 @@ import { HealthModule } from './modules/health/health.module';
       cache: true,
       load: [appConfig],
       validate: validateEnvironment,
+    }),
+    LoggerModule.forRootAsync({
+      inject: [appConfig.KEY],
+      useFactory: (config: ConfigType<typeof appConfig>) => ({
+        pinoHttp: {
+          level: config.logLevel,
+          autoLogging: true,
+        },
+      }),
     }),
     HealthModule,
   ],
