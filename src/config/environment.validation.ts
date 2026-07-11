@@ -6,6 +6,7 @@ const PORT_MAX = 65535;
 interface EnvironmentVariables {
   LOG_LEVEL: LogLevel;
   PORT: number;
+  SWAGGER_ENABLED: string;
 }
 
 export function validateEnvironment(
@@ -14,6 +15,11 @@ export function validateEnvironment(
   const errors: string[] = [];
   const logLevel = validateLogLevel(config.LOG_LEVEL, errors);
   const port = validatePort(config.PORT, errors);
+  const swaggerEnabled = validateBooleanString(
+    config.SWAGGER_ENABLED,
+    'SWAGGER_ENABLED',
+    errors,
+  );
 
   if (errors.length > 0) {
     throw new Error(`Environment validation failed: ${errors.join(', ')}`);
@@ -23,7 +29,26 @@ export function validateEnvironment(
     ...config,
     LOG_LEVEL: logLevel,
     PORT: port,
+    SWAGGER_ENABLED: swaggerEnabled,
   };
+}
+
+function validateBooleanString(
+  value: unknown,
+  name: string,
+  errors: string[],
+): string {
+  if (value === undefined || value === null || value === '') {
+    errors.push(`${name} is required`);
+    return 'false';
+  }
+
+  if (value !== 'true' && value !== 'false') {
+    errors.push(`${name} must be either true or false`);
+    return 'false';
+  }
+
+  return value;
 }
 
 function validateLogLevel(value: unknown, errors: string[]): LogLevel {
