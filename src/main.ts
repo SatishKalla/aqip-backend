@@ -12,6 +12,7 @@ async function bootstrap() {
   const config = app.get<ConfigType<typeof appConfig>>(appConfig.KEY);
 
   app.useLogger(app.get(Logger));
+  app.enableShutdownHooks();
   app.setGlobalPrefix(config.apiPrefix);
   app.useGlobalPipes(globalValidationPipe);
   app.useGlobalFilters(new HttpExceptionFilter());

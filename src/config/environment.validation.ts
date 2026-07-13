@@ -4,6 +4,7 @@ const PORT_MIN = 1;
 const PORT_MAX = 65535;
 
 interface EnvironmentVariables {
+  DATABASE_URL: string;
   LOG_LEVEL: LogLevel;
   PORT: number;
   SWAGGER_ENABLED: string;
@@ -13,6 +14,11 @@ export function validateEnvironment(
   config: Record<string, unknown>,
 ): EnvironmentVariables {
   const errors: string[] = [];
+  const databaseUrl = validateRequiredString(
+    config.DATABASE_URL,
+    'DATABASE_URL',
+    errors,
+  );
   const logLevel = validateLogLevel(config.LOG_LEVEL, errors);
   const port = validatePort(config.PORT, errors);
   const swaggerEnabled = validateBooleanString(
@@ -27,10 +33,24 @@ export function validateEnvironment(
 
   return {
     ...config,
+    DATABASE_URL: databaseUrl,
     LOG_LEVEL: logLevel,
     PORT: port,
     SWAGGER_ENABLED: swaggerEnabled,
   };
+}
+
+function validateRequiredString(
+  value: unknown,
+  name: string,
+  errors: string[],
+): string {
+  if (typeof value !== 'string' || value.trim() === '') {
+    errors.push(`${name} is required`);
+    return '';
+  }
+
+  return value;
 }
 
 function validateBooleanString(

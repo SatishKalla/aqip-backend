@@ -14,9 +14,14 @@ export type LogLevel = (typeof logLevels)[number];
 
 export interface AppConfiguration {
   apiPrefix: string;
+  database: DatabaseConfiguration;
   logLevel: LogLevel;
   port: number;
   swagger: SwaggerConfiguration;
+}
+
+export interface DatabaseConfiguration {
+  url: string;
 }
 
 export interface SwaggerConfiguration {
@@ -29,6 +34,9 @@ export interface SwaggerConfiguration {
 
 export default registerAs('app', (): AppConfiguration => ({
   apiPrefix: 'api/v1',
+  database: {
+    url: process.env.DATABASE_URL as string,
+  },
   logLevel: process.env.LOG_LEVEL as LogLevel,
   port: Number(process.env.PORT),
   swagger: {

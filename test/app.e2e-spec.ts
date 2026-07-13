@@ -26,13 +26,17 @@ describe('HealthController (e2e)', () => {
 
         expect(body).toEqual({
           status: 'ok',
-          timestamp: expect.any(String),
+          timestamp: body.timestamp,
           checks: {
             application: {
               status: 'up',
             },
+            database: {
+              status: 'up',
+            },
           },
         });
+        expect(typeof body.timestamp).toBe('string');
       });
   });
 

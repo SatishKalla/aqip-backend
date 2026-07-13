@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../persistence/prisma/prisma.service';
 import {
   HealthIndicatorResult,
   HealthReadinessResponse,
@@ -7,9 +8,12 @@ import {
 
 @Injectable()
 export class HealthService {
-  getReadiness(): HealthReadinessResponse {
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async getReadiness(): Promise<HealthReadinessResponse> {
     const checks = {
       application: this.getApplicationHealth(),
+      database: await this.getDatabaseHealth(),
     };
 
     return {
@@ -22,6 +26,14 @@ export class HealthService {
   private getApplicationHealth(): HealthIndicatorResult {
     return {
       status: 'up',
+    };
+  }
+
+  private async getDatabaseHealth(): Promise<HealthIndicatorResult> {
+    const isHealthy = await this.prismaService.isHealthy();
+
+    return {
+      status: isHealthy ? 'up' : 'down',
     };
   }
 

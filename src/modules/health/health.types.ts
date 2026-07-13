@@ -3,6 +3,7 @@ export type HealthIndicatorStatus = 'up' | 'down';
 export type HealthStatus = 'ok' | 'error';
 
 export interface HealthIndicatorResult {
+  details?: Record<string, string>;
   status: HealthIndicatorStatus;
 }
 
