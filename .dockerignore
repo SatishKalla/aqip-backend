@@ -1,0 +1,14 @@
+.git
+.agents
+.codex
+node_modules
+dist
+coverage
+.nyc_output
+npm-debug.log*
+Dockerfile
+.dockerignore
+.env
+.env.*
+!.env.example
+README.md
