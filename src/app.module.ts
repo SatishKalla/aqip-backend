@@ -3,6 +3,7 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { appConfig, validateEnvironment } from './config';
 import { HealthModule } from './modules/health/health.module';
+import { UsersModule } from './modules/users/users.module';
 import { PrismaModule } from './persistence/prisma/prisma.module';
 
 @Module({
@@ -24,6 +25,7 @@ import { PrismaModule } from './persistence/prisma/prisma.module';
     }),
     PrismaModule,
     HealthModule,
+    UsersModule,
   ],
 })
 export class AppModule {}

@@ -7,81 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum CredentialProvider {
-  PASSWORD
-  OAUTH
-  SAML
-  AZURE_AD
-}
-
 model User {
-  id          String       @id @default(cuid())
-  email       String       @unique
-  displayName String?      @map("display_name")
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
-  credentials Credential[]
-  roles       UserRole[]
+  id          String   @id @default(cuid())
+  email       String   @unique
+  displayName String?  @map("display_name")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("users")
-}
-
-model Credential {
-  id             String             @id @default(cuid())
-  userId         String             @map("user_id")
-  provider       CredentialProvider
-  providerUserId String             @map("provider_user_id")
-  secretHash     String?            @map("secret_hash")
-  createdAt      DateTime           @default(now()) @map("created_at")
-  updatedAt      DateTime           @updatedAt @map("updated_at")
-  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerUserId])
-  @@index([userId])
-  @@map("credentials")
-}
-
-model Role {
-  id          String           @id @default(cuid())
-  name        String           @unique
-  description String?
-  createdAt   DateTime         @default(now()) @map("created_at")
-  updatedAt   DateTime         @updatedAt @map("updated_at")
-  users       UserRole[]
-  permissions RolePermission[]
-
-  @@map("roles")
-}
-
-model Permission {
-  id          String           @id @default(cuid())
-  key         String           @unique
-  description String?
-  createdAt   DateTime         @default(now()) @map("created_at")
-  updatedAt   DateTime         @updatedAt @map("updated_at")
-  roles       RolePermission[]
-
-  @@map("permissions")
-}
-
-model UserRole {
-  userId String @map("user_id")
-  roleId String @map("role_id")
-  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([userId, roleId])
-  @@index([roleId])
-  @@map("user_roles")
-}
-
-model RolePermission {
-  roleId       String     @map("role_id")
-  permissionId String     @map("permission_id")
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-
-  @@id([roleId, permissionId])
-  @@index([permissionId])
-  @@map("role_permissions")
 }
